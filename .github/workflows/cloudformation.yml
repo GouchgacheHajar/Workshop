@@ -1,15 +1,16 @@
 name: Deploy CloudFormation Stacks
 
 on:
-  push: 
-    branches: "main"
-    paths-ignore:
-      - "README.md"
-      - ".gitignore"
-      - ".github"
-    
+  workflow_dispatch: 
+   inputs:
+     region:
+       description: 'AWS Region'
+       required: true
+       default: 'us-east-1'
+     keypair:
+       description: 'SSH Key Pair'
+       required: true
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   cluster:
     name: Deploy stack 
@@ -24,7 +25,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.REGION }} 
+          aws-region: ${{ github.event.inputs.region }} 
 
       - name: Deploy CloudFormation Stacks
         uses: aws-actions/aws-cloudformation-github-deploy@master
@@ -32,3 +33,19 @@ jobs:
           name:  hgbuckets
           template: template.yaml
           capabilities: CAPABILITY_NAMED_IAM
+      - name: Deploy CloudFormation Stack
+        run: |
+          aws cloudformation create-stack --stack-name stackhgo \
+          --template-body file://template.yaml \
+          --region us-east-1 
+      - name: Wait for Stack to Complete
+        run: |
+          aws cloudformation wait stack-create-complete --stack-name stackhgo \
+          --region us-east-1
+
+      - name: Display Stack Outputs
+        run: |
+            aws cloudformation describe-stacks --stack-name stackhgo \
+            --query 'Stacks[0].Outputs' \
+            --output table \
+            --region us-east-1 
