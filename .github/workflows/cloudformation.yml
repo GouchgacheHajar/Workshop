@@ -33,19 +33,5 @@ jobs:
           name:  hgbuckets
           template: template.yaml
           capabilities: CAPABILITY_NAMED_IAM
-      - name: Deploy CloudFormation Stack
-        run: |
-          aws cloudformation create-stack --stack-name stackhgo \
-          --template-body file://template.yaml \
-          --region us-east-1 
-      - name: Wait for Stack to Complete
-        run: |
-          aws cloudformation wait stack-create-complete --stack-name stackhgo \
-          --region us-east-1
-
-      - name: Display Stack Outputs
-        run: |
-            aws cloudformation describe-stacks --stack-name stackhgo \
-            --query 'Stacks[0].Outputs' \
-            --output table \
-            --region us-east-1 
+    
+     
