@@ -7,8 +7,7 @@ Resources:
     Type: AWS::S3::Bucket
     DeletionPolicy: Delete
     Properties:
-      Buc
-      ketName: "buckethgo"
+      BucketName: "buckethgo"
 
 
   IAMRoleWorkshop:
@@ -86,7 +85,7 @@ Resources:
     Properties:
       Description: "the function for Workshop"
       FunctionName: "Readhandlerhgo"
-      Handler: "index.lambda_handler"
+      Handler: "index.lambda_handler" 
       Role: !GetAtt IAMRoleWorkshop.Arn
       Runtime: "python3.9"
       Timeout: 60
